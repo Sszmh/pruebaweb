@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Topics</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" onclick="showAllTopics()"><h1>Reddit Topics</h1></a>
+    </header>
+
+    <div class="container">
+        <div id="topicList">
+            <ul> 
+            </ul>
+        </div>
+
+        <div id="topicDetails" class="hidden">  
+            
+        </div>
+    </div>
+
+<script>
+    function showTopicDetails(topicId) {
+        fetch(`http://localhost/pedbox/api.php?id=${topicId}`)
+        .then(response => response.json())
+        .then(data => {
+        console.log(data);
+      
+        const topicDetailsDiv = document.getElementById('topicDetails');
+        topicDetailsDiv.innerHTML = `
+        <h2>${data.title}</h2>
+        <p>URL: ${data.url}</p>
+        <p>Subscribers: ${data.subscribers}</p>`;
+
+     
+      topicDetailsDiv.classList.add('visible');
+      const topicListDiv = document.getElementById('topicList');
+      topicListDiv.classList.add('hidden');
+    });
+}
+
+    function getAllTopics() {
+        fetch('http://localhost/pedbox/api.php')
+        .then(response => response.json())
+        .then(data => {
+        const topicListUl = document.querySelector('#topicList ul');
+        topicListUl.innerHTML = '';
+        data.topics.forEach(topic => {
+        const topicItem = document.createElement('li');
+        topicItem.classList.add('topic-item');
+        topicItem.innerHTML = `<a href="#" onclick="showTopicDetails(${topic.id})">${topic.title}</a>`;
+        topicListUl.appendChild(topicItem);
+      });
+    });
+}
+
+    window.onload = getAllTopics;
+</script>
+</body>
+</html>
